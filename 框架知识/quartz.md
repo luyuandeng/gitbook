@@ -1,0 +1,42 @@
+#quartz
+调度框架 同步执行调度任务 
+调度器 Scheduler 
+调度器工厂 SchedulerFactory 创建调度器实例
+作业任务JobDetail 用来定义Job的实例
+JobBuilder 用来定义或创建触发器的实例
+触发器Trigger 定义一个指定的Job何时被执行
+TriggerBuilder 用来定义或创建触发器的实例。
+任务实例Job 调度器执行的内容
+JobFactory 实例化job
+
+调度器接口实例创建完成后，就可以添加，删除和查询Jobs和Triggers对象
+
+job接口
+public interface IJob
+{
+    void Execute(JobExecutionContext context);
+}
+JobExecutionContext 运行时环境的工作任务信息，执行该方法的调度器引用，触发该方法执行的触发器引用，Job实例的JobDetail对象，以及一些其它信息。
+execute方法抛出的唯一一种异常类型是JobExecutionException，你应该在execute方法内的try-catch代码块中包装好要处理的异常
+
+JobDetail为Job实例提供了许多设置属性，以及JobDataMap成员变量属性，它用来存储特定Job实例的状态信息
+Quartz的JobDetail、Trigger都可以在运行时重新设置，并且在下次调用时候起作用。
+
+
+常用触发器：SimpleTrigger和CronTrigger
+SimpleTrigger适用于一次性的任务执行（在给定的时间段只执行一次的作业任务），或者你需要在指定时间多次触发作业任务，每次触发都延迟固定的时间
+CronTrigger适用于基于类似日历时间表的触发，比如“每个周五的下午”或是“每月10号的10:15”
+
+Identites（标识符）
+作业任务和触发器被注册到Quartz调度器时需要提供标识信息
+标识允许作业任务和触发器按组存放，比如分为“报表类Job”和“维护类Job”
+作业任务和触发器的键的名称部分在同一个组内必须唯一，换句话说，作业任务和触发器的键（或标识符）的名字是由键名和组名共同组成的。
+
+job属性
+Durability：如果一个Job是非持久化的，一旦没有任何活跃的触发器关联这个Job实例时，这个实例会自动地从调度器中移除
+RequestsRecovery：如果一个Job设置了请求恢复参数，并且在调度器强制关闭过程中恰好在执行，当调度器重启时，它会重新被执行
+@DisallowConcurrentExecution
+@PersistJobDataAfterExecution
+
+JobStore: 任务持久化
+Quartz支持任务持久化，这可以让你在运行时增加任务或者对现存的任务进行修改，并为后续任务的执行持久化这些变更和增加的部分
